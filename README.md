@@ -1,8 +1,8 @@
-Healthcare Backend
+# Healthcare Backend
 
-A Healthcare Management Backend built with Django, Django REST Framework, PostgreSQL, and JWT Authentication.
+A Healthcare Management Backend built with Django, Django REST Framework (DRF), PostgreSQL, and JWT Authentication.
 
-Features
+## Features
 
 - JWT-based Authentication
 - Patient Management (CRUD)
@@ -10,244 +10,298 @@ Features
 - Patient-Doctor Mapping
 - PostgreSQL Database
 - Django Admin Panel
-- Configuration via pyproject.toml
+- Configuration via `pyproject.toml`
 
-⸻
+---
 
-Project Structure
+## Project Structure
 
+```text
 healthcare_backend/
 ├── pyproject.toml
 ├── manage.py
 ├── healthcare_backend/
-│ ├── settings.py
-│ ├── urls.py
-│ ├── asgi.py
-│ └── wsgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
 ├── authentication/
 ├── patients/
 ├── doctors/
 ├── mappings/
 └── README.md
+```
 
-⸻
+---
 
-Prerequisites
+## Prerequisites
 
 - Python 3.12+
 - PostgreSQL 15+
 - pip
 
-⸻
+---
 
-Setup & Run
+## Quick Start
 
-1. Clone the Repository
+### 1. Clone the Repository
 
-git clone <repository-url>
-cd healthcare_backend
+```bash
+git clone https://github.com/<your-username>/Healthcare-Backend.git
+cd Healthcare-Backend
+```
 
-2. Create Virtual Environment
+### 2. Create and Activate Virtual Environment
 
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-3. Install Dependencies
+### 3. Install Dependencies
 
+```bash
 pip install django djangorestframework djangorestframework-simplejwt psycopg2-binary
+```
 
-4. Configure Database and JWT Settings
+### 4. Configure Database
 
-Update pyproject.toml:
+Update the database configuration inside `pyproject.toml`.
 
-[tool.django]
-secret_key = "your-secret-key"
-debug = true
+```toml
 [tool.django.database]
 name = "healthcare_db"
 user = "your_postgres_username"
 password = "your_postgres_password"
 host = "localhost"
 port = "5432"
-[tool.django.jwt]
-access_token_lifetime_minutes = 60
-refresh_token_lifetime_days = 7
+```
 
-Note: Use your local PostgreSQL username. On many macOS Homebrew installations this is your system username rather than postgres.
+> **Note:** On macOS/Homebrew PostgreSQL installations, your PostgreSQL username is often your system username rather than `postgres`.
 
-5. Create PostgreSQL Database
+### 5. Create PostgreSQL Database
 
+```bash
 createdb healthcare_db
+```
 
 Verify:
 
+```bash
 psql -l
+```
 
-6. Run Migrations
+### 6. Run Database Migrations
 
+```bash
 python manage.py migrate
+```
 
-7. Create Admin User (Optional)
+### 7. Create Admin User (Optional)
 
+```bash
 python manage.py createsuperuser
+```
 
-8. Start Development Server
+### 8. Start Development Server
 
+```bash
 python manage.py runserver
+```
 
 Server:
 
+```text
 http://127.0.0.1:8000/
+```
 
 Admin Panel:
 
+```text
 http://127.0.0.1:8000/admin/
+```
 
-⸻
+---
 
-Authentication
+## Authentication
 
-Register
+### Register
 
-POST
+**POST** `/api/auth/register/`
 
-/api/auth/register/
+#### Request Body
 
-Request:
-
+```json
 {
-"name": "Jane Doe",
-"email": "jane@example.com",
-"password": "Pass@1234",
-"password2": "Pass@1234"
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "Pass@1234",
+  "password2": "Pass@1234"
 }
+```
 
-Response:
+#### Response
 
+```json
 {
-"access": "<jwt_access_token>",
-"refresh": "<jwt_refresh_token>"
+  "access": "<jwt_access_token>",
+  "refresh": "<jwt_refresh_token>"
 }
+```
 
-Login
+---
 
-POST
+### Login
 
-/api/auth/login/
+**POST** `/api/auth/login/`
 
-Request:
+#### Request Body
 
+```json
 {
-"username": "jane@example.com",
-"password": "Pass@1234"
+  "username": "jane@example.com",
+  "password": "Pass@1234"
 }
+```
 
-Refresh Token
+---
 
-POST
+### Refresh Token
 
-/api/auth/token/refresh/
+**POST** `/api/auth/token/refresh/`
 
-Request:
+#### Request Body
 
+```json
 {
-"refresh": "<refresh_token>"
+  "refresh": "<refresh_token>"
 }
+```
 
-Protected Routes
+---
 
-Include:
+### Authorization Header
 
+All protected endpoints require:
+
+```http
 Authorization: Bearer <access_token>
+```
 
-⸻
+---
 
-Patients API
+## Patients API
 
-Create Patient
+### Create Patient
 
-POST
+**POST** `/api/patients/`
 
-/api/patients/
+#### Request Body
 
-Request:
-
+```json
 {
-"name": "John Smith",
-"date_of_birth": "1990-05-15",
-"gender": "M",
-"contact_number": "+919876543210",
-"email": "john@example.com",
-"address": "123 Main St, Pune",
-"medical_history": "Hypertension"
+  "name": "John Smith",
+  "date_of_birth": "1990-05-15",
+  "gender": "M",
+  "contact_number": "+919876543210",
+  "email": "john@example.com",
+  "address": "123 Main St, Pune",
+  "medical_history": "Hypertension"
 }
+```
 
-Other Endpoints
+### Other Patient Endpoints
 
-GET /api/patients/
-GET /api/patients/<id>/
-PUT /api/patients/<id>/
-DELETE /api/patients/<id>/
+```http
+GET     /api/patients/
+GET     /api/patients/<id>/
+PUT     /api/patients/<id>/
+DELETE  /api/patients/<id>/
+```
 
-⸻
+---
 
-Doctors API
+## Doctors API
 
-Create Doctor
+### Create Doctor
 
-POST
+**POST** `/api/doctors/`
 
-/api/doctors/
+#### Request Body
 
-Request:
-
+```json
 {
-"name": "Dr. Priya Sharma",
-"specialization": "Cardiology",
-"contact_number": "+911234567890",
-"email": "priya@hospital.com",
-"experience_years": 10,
-"qualification": "MBBS, MD",
-"available": true
+  "name": "Dr. Priya Sharma",
+  "specialization": "Cardiology",
+  "contact_number": "+911234567890",
+  "email": "priya@hospital.com",
+  "experience_years": 10,
+  "qualification": "MBBS, MD",
+  "available": true
 }
+```
 
-Other Endpoints
+### Other Doctor Endpoints
 
-GET /api/doctors/
-GET /api/doctors/<id>/
-PUT /api/doctors/<id>/
-DELETE /api/doctors/<id>/
+```http
+GET     /api/doctors/
+GET     /api/doctors/<id>/
+PUT     /api/doctors/<id>/
+DELETE  /api/doctors/<id>/
+```
 
-⸻
+---
 
-Patient-Doctor Mapping API
+## Patient-Doctor Mapping API
 
-Create Mapping
+### Create Mapping
 
-POST
+**POST** `/api/mappings/`
 
-/api/mappings/
+#### Request Body
 
-Request:
-
+```json
 {
-"patient": 1,
-"doctor": 2,
-"notes": "Primary cardiologist"
+  "patient": 1,
+  "doctor": 2,
+  "notes": "Primary cardiologist"
 }
+```
 
-Other Endpoints
+### Other Mapping Endpoints
 
-GET /api/mappings/
-GET /api/mappings/<patient_id>/
-DELETE /api/mappings/delete/<id>/
+```http
+GET     /api/mappings/
+GET     /api/mappings/<patient_id>/
+DELETE  /api/mappings/delete/<id>/
+```
 
-⸻
+---
 
-Available Routes
+## Available Routes
 
+```text
 /admin/
 /api/auth/
 /api/patients/
 /api/doctors/
 /api/mappings/
+```
+
+---
+
+## Testing Workflow
+
+1. Register a user using `/api/auth/register/`
+2. Login using `/api/auth/login/`
+3. Copy the access token
+4. Add the token to the Authorization header:
+
+```http
+Authorization: Bearer <access_token>
+```
+
+5. Create Patients
+6. Create Doctors
+7. Create Patient-Doctor Mappings
+8. Verify CRUD operations through Postman or any API client
